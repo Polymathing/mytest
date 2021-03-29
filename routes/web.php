@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Http;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,4 +16,18 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('profiles', 'Profiles@list');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+Route::group(['middleware' => ['auth', 'admin']], function () {
+
+    Route::get('/dashboard', function () {
+        $data = Http::get('https://api.exchangeratesapi.io/latest')->json();
+        return view('admin.dashboard', ['data' => $data]);
+    });
 });
